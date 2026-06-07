@@ -1,0 +1,46 @@
+.goals-page { display: flex; flex-direction: column; gap: 30px; }
+.goals-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+.goals-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
+
+.goals-form-container { padding: 25px; border-radius: 20px; height: fit-content; }
+.light-mode .goals-form-container { background: #ffffff; border: 1px solid var(--glass-border); }
+
+.goals-form { display: flex; flex-direction: column; gap: 15px; }
+
+.goals-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; align-content: start; }
+
+.goal-card { padding: 25px; border-radius: 20px; border: 1px solid var(--glass-border); display: flex; flex-direction: column; gap: 20px; }
+.light-mode .goal-card { background: #ffffff; box-shadow: none; }
+
+.goal-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.goal-card-header h4 { margin: 0; font-size: 1.2rem; color: var(--primary-color); }
+.goal-dates { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.goal-deadline { font-size: 0.8rem; color: #aab; }
+.light-mode .goal-deadline { color: #64748b; }
+
+.goal-amounts { display: flex; justify-content: space-between; }
+.amount-box { display: flex; flex-direction: column; gap: 5px; }
+.amount-box span { font-size: 0.8rem; color: #aab; }
+.light-mode .amount-box span { color: #64748b; }
+.amount-box strong { font-size: 1.1rem; color: var(--text-light); }
+.text-right { text-align: right; }
+
+.goal-progress-container { display: flex; align-items: center; gap: 15px; }
+.goal-progress-bar { flex: 1; height: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 10px; overflow: hidden; position: relative; }
+.light-mode .goal-progress-bar { background: #f1f5f9; }
+
+.goal-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 10px;
+}
+
+.goal-percentage { font-size: 0.9rem; font-weight: bold; color: var(--primary-color); min-width: 45px; }
+
+@media (max-width: 1100px) {
+  .goals-grid { grid-template-columns: 1fr; }
+  .goals-list { grid-template-columns: 1fr; }
+}
+
+.amount-input-group { display: flex; gap: 10px; align-items: center; }
+.currency-select-inline { width: 80px; padding: 11px !important; border-radius: 8px; }

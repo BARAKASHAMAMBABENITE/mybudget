@@ -1,0 +1,71 @@
+.reports-page { display: flex; flex-direction: column; gap: 30px; }
+.reports-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+
+.report-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.report-stat-box { padding: 20px; border-radius: 12px; border: 1px solid var(--glass-border); }
+.report-stat-box span { font-size: 0.8rem; color: #aab; text-transform: uppercase; letter-spacing: 1px; }
+.light-mode .report-stat-box span { color: #64748b; font-weight: 600; }
+.report-stat-box h3 { margin: 10px 0 0; font-size: 1.5rem; }
+
+.report-table-container { padding: 30px; border-radius: 20px; border: 1px solid var(--glass-border); }
+.table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.transaction-count { font-size: 0.85rem; color: #aab; }
+.light-mode .transaction-count { color: #64748b; }
+
+.report-table-wrapper { overflow-x: auto; }
+.report-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+
+.report-table th {
+  text-align: left;
+  padding: 15px;
+  color: #aab;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--glass-border);
+}
+.light-mode .report-table th { color: #64748b; }
+
+.report-table td { padding: 15px; border-bottom: 1px solid var(--glass-border); font-size: 0.95rem; }
+.report-table tr:last-child td { border-bottom: none; }
+
+.date-cell { color: #aab; width: 150px; }
+.light-mode .date-cell { color: #64748b; }
+
+.title-cell { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+.type-indicator { width: 8px; height: 8px; border-radius: 50%; }
+.type-indicator.income { background: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); }
+.type-indicator.expense { background: #e74c3c; box-shadow: 0 0 8px #e74c3c; }
+
+.amount-cell { font-weight: bold; }
+.text-right { text-align: right; }
+
+.no-data-cell { text-align: center; padding: 50px !important; color: #aab; font-style: italic; }
+
+.report-footer-note {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #aab;
+  margin-top: 10px;
+}
+.light-mode .report-footer-note { color: #64748b; }
+
+@media (max-width: 768px) {
+  .reports-header { flex-direction: column; align-items: stretch; }
+  .reports-header button { width: 100%; }
+}
+
+/* Style pour le mode clair Outlined */
+.light-mode .report-stat-box, 
+.light-mode .report-table-container {
+  background: #ffffff;
+  box-shadow: none;
+}
+
+.light-mode .report-table td {
+  color: var(--text-light);
+}

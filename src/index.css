@@ -8,11 +8,61 @@
   --glass-border: rgba(255, 255, 255, 0.1);
 }
 
+/* Mode Clair - Design Raffiné */
+.light-mode {
+  --bg-dark: #f8fafc; /* Un fond très légèrement grisé pour faire ressortir le blanc des cartes */
+  --text-light: #1e293b; /* Un bleu ardoise foncé pour la lecture */
+  --glass: #ffffff;
+  --glass-border: rgba(0, 210, 255, 0.2); /* Bordure bleue très légère */
+}
+
+.light-mode .navbar {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--glass-border);
+  backdrop-filter: none; /* Look plus net sans flou */
+}
+
+.light-mode .nav-user-controls {
+  background: #ffffff;
+  border: 1px solid var(--glass-border);
+}
+
+.light-mode .form-group input, 
+.light-mode .form-group textarea,
+.light-mode .form-group select,
+.light-mode .currency-select-inline {
+  background-color: #ffffff;
+  color: #1a2c33;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .service-card, 
+.light-mode .feature-card, 
+.light-mode .widget, 
+.light-mode .history-item,
+.light-mode .faq-item,
+.light-mode .value-card,
+.light-mode .contact-form-container,
+.light-mode .stat-card {
+  background: #ffffff; 
+  color: #1a2c33;
+  box-shadow: none; /* On enlève les ombres pour le style outlined */
+  border: 1px solid var(--glass-border);
+}
+
+/* Correction de l'effet Glass global pour le mode clair */
+.light-mode .glass {
+  background: var(--glass);
+  box-shadow: none;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+}
+
 /* Styles généraux pour les boutons secondaires */
 .btn-secondary { background: #334d57; color: white; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; margin-right: 10px; }
 .btn-secondary:hover { background: #446677; }
 
-.text-success { color: #2ecc71; }
+.text-success { color: var(--primary-color); }
 .text-error { color: #e74c3c; }
 .text-primary { color: var(--primary-color); }
 
@@ -20,10 +70,29 @@
   background: var(--glass);
   backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
 
-body { margin: 0; font-family: sans-serif; background-color: var(--bg-dark); color: var(--text-light); }
+body { 
+  margin: 0; 
+  font-family: sans-serif; 
+  background-color: var(--bg-dark); 
+  color: var(--text-light);
+  background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: var(--bg-dark);
+  opacity: 0.85; /* Ajustez l'opacité pour voir plus ou moins l'image */
+  z-index: -1;
+}
 
 .navbar {
   display: flex;
@@ -37,6 +106,105 @@ body { margin: 0; font-family: sans-serif; background-color: var(--bg-dark); col
   backdrop-filter: blur(15px);
   border-bottom: 1px solid var(--glass-border);
 }
+
+.logo {
+  color: #ffffff; /* Titre MyBudget en blanc */
+  font-weight: bold;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+}
+
+.nav-user-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: var(--glass);
+  padding: 5px 15px;
+  border-radius: 30px;
+  border: 1px solid var(--glass-border);
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+}
+
+.theme-toggle:hover { transform: rotate(15deg) scale(1.1); }
+
+.nav-notification-btn {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.nav-notification-btn:hover { transform: scale(1.1); }
+
+.currency-toggle {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s;
+}
+.currency-toggle:hover { transform: scale(1.2); }
+
+.nav-avatar { width: 32px; height: 32px; border-radius: 0; border: 2px solid var(--primary-color); }
+.user-name-display { font-size: 0.9rem; fontWeight: 600; color: var(--text-light); }
+
+/* User Dropdown Menu */
+.user-dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  min-width: 180px;
+  padding: 15px;
+  border-radius: 12px;
+  display: flex;
+  background: rgba(26, 44, 51, 0.95);
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1100;
+  text-align: center;
+  border: 1px solid var(--glass-border);
+}
+
+.dropdown-user-name {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #ffffff; /* Nom de l'utilisateur en blanc */
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 8px;
+}
+
+.btn-logout {
+  background: var(--primary-color);
+  color: #0f1d24;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover { opacity: 0.8; transform: translateY(-1px); }
+
 .nav-links a { color: white; margin: 0 15px; text-decoration: none; white-space: nowrap; }
 .nav-links a:hover { color: var(--primary-color); }
 .navbar-actions { display: flex; align-items: center; gap: 20px; }
@@ -93,7 +261,34 @@ body { margin: 0; font-family: sans-serif; background-color: var(--bg-dark); col
 
 .hero-actions-center { margin-top: 40px; display: flex; justify-content: center; }
 
-.btn-primary:hover { opacity: 0.9; }
+.btn-primary {
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  color: #ffffff; /* Titre en blanc comme demandé */
+  border: none;
+  padding: 10px 25px;
+  border-radius: 50px; /* Forme pilule identique au bouton bilan */
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
+}
+
+.light-mode .btn-primary {
+  background: #ffffff;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  box-shadow: none;
+}
+
+.light-mode .btn-primary:hover {
+  background: var(--primary-color);
+  color: #ffffff;
+}
+
+.btn-primary:hover { 
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 210, 255, 0.4);
+}
 .subtitle { color: var(--primary-color); text-transform: uppercase; font-weight: bold; }
 
 /* Services Grid */
@@ -130,13 +325,6 @@ body { margin: 0; font-family: sans-serif; background-color: var(--bg-dark); col
 /* Images */
 .hero-image { flex: 1; overflow: hidden; border-radius: 20px; }
 .img-fluid { width: 100%; height: auto; display: block; object-fit: cover; }
-
-/* Footer */
-.main-footer { background: #071115; padding: 60px 5% 20px; margin-top: 50px; }
-.footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-.footer-col h3, .footer-col h4 { color: var(--primary-color); margin-bottom: 20px; }
-.footer-col p, .footer-col a { color: #aab; text-decoration: none; display: block; margin-bottom: 10px; }
-.footer-bottom { border-top: 1px solid #1a2c33; margin-top: 40px; padding-top: 20px; text-align: center; font-size: 0.9rem; }
 
 .page-padding { padding: 100px 5%; min-height: 50vh; }
 
@@ -183,7 +371,7 @@ body { margin: 0; font-family: sans-serif; background-color: var(--bg-dark); col
   padding: 12px;
   border: 1px solid #334d57;
   border-radius: 8px;
-  background-color: #0f1d24;
+  background-color: var(--glass);
   color: var(--text-light);
   font-size: 1rem;
 }
@@ -497,38 +685,120 @@ body { margin: 0; font-family: sans-serif; background-color: var(--bg-dark); col
   border-top: 1px solid #334d57;
 }
 
-/* Dashboard Page */
-.dashboard-page {
+
+/* --- Dashboard Modern Redesign --- */
+.dashboard-container { display: flex; flex-direction: column; gap: 30px; }
+.dashboard-header h1 { color: var(--primary-color); font-size: 2.2rem; margin-bottom: 5px; }
+.dashboard-header p { color: #aab; }
+
+.dashboard-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 25px;
+  border-radius: 16px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+}
+
+.light-mode .summary-card {
+  background: #ffffff;
+  box-shadow: none;
+  border: 1px solid var(--glass-border);
+}
+
+.light-mode .chart-section {
+  background: #ffffff;
+  border: 1px solid var(--glass-border);
+  box-shadow: none;
+}
+
+.summary-card .icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.summary-card.income .icon { background: rgba(0, 210, 255, 0.15); color: var(--primary-color); }
+.summary-card.expenses .icon { background: rgba(231, 76, 60, 0.15); color: #e74c3c; }
+.summary-card.balance .icon { background: rgba(0, 210, 255, 0.15); color: var(--primary-color); }
+
+.summary-card .info span { color: #aab; font-size: 0.9rem; }
+.summary-card .info h3 { margin: 5px 0 0; font-size: 1.6rem; color: #fff; }
+
+.stats-detailed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  padding: 25px;
+  border-radius: 16px;
   text-align: center;
 }
-.dashboard-page h1 {
-  color: var(--primary-color);
-  margin-bottom: 30px;
-}
-.dashboard-widgets {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
-  margin-top: 40px;
-}
-.widget {
-  background-color: #1a2c33;
+
+.stat-card h4 { color: #aab; margin-bottom: 15px; font-size: 1rem; }
+.stat-card .stat-value { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+.stat-card p { font-size: 0.85rem; color: #889; margin: 0; }
+
+.chart-section {
   padding: 30px;
-  border-radius: 15px;
-  text-align: left;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
 }
-.widget h3 {
-  color: var(--primary-color);
-  margin-bottom: 15px;
+
+.chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.chart-legend { display: flex; gap: 20px; font-size: 0.9rem; color: #aab; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+.dot.income { background: var(--primary-color); }
+.dot.expenses { background: #e74c3c; }
+
+.chart-placeholder {
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
-.widget p {
-  margin-bottom: 8px;
+
+.bar-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 250px;
+  gap: 15px;
+}
+
+.bar-pair {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  flex: 1;
+  height: 100%;
+  max-width: 40px;
+}
+
+.bar { width: 100%; border-radius: 4px 4px 0 0; }
+.bar.income { background: linear-gradient(to top, var(--primary-color), var(--secondary-color)); }
+.bar.expenses { background: linear-gradient(to top, #e74c3c, #c0392b); }
+
+.chart-days {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 15px;
   color: #aab;
-}
-.widget p span {
-  font-weight: bold;
-  color: var(--text-light);
+  font-size: 0.8rem;
+  padding-top: 10px;
+  border-top: 1px solid var(--glass-border);
 }
 
 @media (max-width: 992px) {
@@ -539,3 +809,104 @@ body { margin: 0; font-family: sans-serif; background-color: var(--bg-dark); col
 /* Actions de bienvenue (Remplacement Hero) */
 .welcome-actions { border-bottom: 1px solid #1a2c33; }
 .service-icon { color: var(--primary-color); margin-bottom: 20px; }
+
+/* Styles pour l'écran de connexion */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.login-box {
+  padding: 3.5rem;
+  border-radius: 24px;
+  text-align: center;
+  max-width: 480px;
+  width: 90%;
+  border: 1px solid var(--glass-border);
+  background: rgba(26, 44, 51, 0.6);
+}
+
+.login-box h2 { color: var(--primary-color); margin-bottom: 1rem; }
+.login-box p { color: #aab; margin-bottom: 2rem; line-height: 1.5; }
+
+/* --- RESPONSIVITÉ (Media Queries) --- */
+
+/* Tablettes et petits ordinateurs */
+@media (max-width: 1024px) {
+  .welcome-actions-video h1 { font-size: 3.5rem; }
+  .services-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Mobiles (Portrait et Paysage) */
+@media (max-width: 992px) {
+  .navbar {
+    flex-direction: row; /* On force le maintien en ligne */
+    gap: 10px;
+    padding: 10px 3%;
+    justify-content: flex-end; /* Aligne à droite pour laisser la place au bouton sidebar à gauche */
+  }
+
+  .nav-links { display: none; } /* On cache les liens vides pour gagner de la place */
+  .logo { font-size: 1.2rem; } /* On réduit un peu la taille du logo sur mobile */
+
+  .navbar-actions {
+    width: auto;
+    flex-direction: row; /* On force le maintien en ligne ici aussi */
+    gap: 8px;
+  }
+
+  .btn-primary { padding: 8px 12px; font-size: 0.8rem; } /* Bouton plus compact */
+  .nav-user-controls { padding: 5px 8px; gap: 8px; } /* Contrôles plus serrés */
+
+  .search-bar-container { margin-right: 0; width: 100%; max-width: 300px; }
+  .search-input { width: 100%; }
+  .search-input:focus { width: 100%; }
+
+  .about-grid, 
+  .values-grid, 
+  .team-grid, 
+  .services-detailed-grid, 
+  .why-choose-us-grid, 
+  .dashboard-widgets,
+  .dashboard-summary-grid,
+  .stats-detailed-grid { 
+    grid-template-columns: 1fr; 
+  }
+
+  .page-header h1 { font-size: 2.5rem; }
+  .welcome-actions-video h1 { font-size: 2.5rem; }
+  .welcome-actions-video { padding: 40px 20px; }
+}
+
+@media (max-width: 768px) {
+  .hero-actions-center {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+  }
+
+  .btn-play-modern { margin-left: 0; width: 100%; max-width: 250px; }
+  .services-grid { grid-template-columns: 1fr; }
+  .page-padding { padding: 60px 5%; }
+  .login-box { padding: 2rem 1.5rem; width: 95%; }
+}
+
+/* --- Mise en page globale avec Sidebar --- */
+
+.main-layout-content {
+  margin-left: 220px; /* Doit correspondre à la largeur de la sidebar */
+  width: calc(100% - 220px);
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 992px) {
+  .main-layout-content {
+    margin-left: 0;
+    width: 100%;
+  }
+}

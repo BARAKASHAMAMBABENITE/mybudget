@@ -5,6 +5,14 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { fas } from '@fortawesome/free-solid-svg-icons';
 import { fab } from '@fortawesome/free-brands-svg-icons';
 import { motion } from 'framer-motion';
+import { useGoogleLogin } from '@react-oauth/google';
+import Sidebar from './Sidebar';
+import Income from './Income';
+import Expense from './Expense';
+import Statistics from './Statistics';
+import SavingsGoals from './SavingsGoals';
+import Reports from './Reports';
+import Notifications from './Notifications';
 import './index.css';
 
 // Initialisation de la bibliothèque d'icônes
@@ -103,7 +111,7 @@ const WhyChooseUs = () => (
       whileInView={{ opacity: 1 }} 
       className="subtitle"
     >
-      Pourquoi choisir Mybudget ?
+      Pourquoi choisir MyBudget ?
     </motion.span>
     <motion.h2 
       initial={{ y: 20, opacity: 0 }} 
@@ -141,16 +149,16 @@ const FAQSection = () => {
       answer: "La gestion budgétaire est le processus de planification et de contrôle de vos revenus et dépenses. Elle vous aide à atteindre vos objectifs financiers, à éviter les dettes et à épargner pour l'avenir."
     },
     {
-      question: "Comment Mybudget peut m'aider ?",
-      answer: "Mybudget vous offre des outils d'analyse, des conseils personnalisés et des stratégies d'épargne pour optimiser votre budget, réduire vos dépenses inutiles et augmenter votre capacité d'investissement."
+      question: "Comment MyBudget peut m'aider ?",
+      answer: "MyBudget vous offre des outils d'analyse, des conseils personnalisés et des stratégies d'épargne pour optimiser votre budget, réduire vos dépenses inutiles et augmenter votre capacité d'investissement."
     },
     {
       question: "Est-ce que mes données sont sécurisées ?",
       answer: "Absolument. Nous utilisons des protocoles de sécurité avancés et le chiffrement de bout en bout pour garantir la confidentialité et la sécurité de toutes vos informations financières."
     },
     {
-      question: "Puis-je utiliser Mybudget pour mon entreprise ?",
-      answer: "Oui, nos services d'audit et de conseil Mybudget sont également adaptés aux entreprises pour optimiser leur rentabilité."
+      question: "Puis-je utiliser MyBudget pour mon entreprise ?",
+      answer: "Oui, nos services d'audit et de conseil MyBudget sont également adaptés aux entreprises pour optimiser leur rentabilité."
     }
   ];
 
@@ -192,7 +200,7 @@ const HomePageContent = ({ onStartBudget, onWatchVideo }) => (
         animate={{ opacity: 1, y: 0 }} 
         className="welcome-actions-video"
       >
-        <span className="subtitle-bright">Bienvenue chez Mybudget</span>
+        <span className="subtitle-bright">Bienvenue chez MyBudget</span>
         <h1>Prenez le contrôle de vos finances dès aujourd'hui</h1>
         <p>Découvrez une manière simplifiée et intelligente de gérer votre argent avec nos outils d'analyse et de coaching.</p>
         <div className="hero-actions-center">
@@ -211,7 +219,7 @@ const HomePageContent = ({ onStartBudget, onWatchVideo }) => (
 const About = () => (
   <div className="about-page">
     <section className="page-header">
-      <h1>À propos de Mybudget</h1>
+      <h1>À propos de MyBudget</h1>
       <p>Découvrez notre parcours, nos valeurs et les experts qui font de votre réussite financière une réalité.</p>
     </section>
     
@@ -220,7 +228,7 @@ const About = () => (
         <div className="about-text">
           <span className="subtitle">Qui sommes-nous</span>
           <h2>Votre partenaire stratégique pour la sérénité financière</h2>
-          <p>Fondée en 2010, Mybudget est à l'avant-garde du conseil budgétaire, aidant les particuliers et les entreprises à relever les défis financiers complexes. Notre équipe pluridisciplinaire réunit des décennies d'expérience en finance et gestion de patrimoine.</p>
+          <p>Fondée en 2010, MyBudget est à l'avant-garde du conseil budgétaire, aidant les particuliers et les entreprises à relever les défis financiers complexes. Notre équipe pluridisciplinaire réunit des décennies d'expérience en finance et gestion de patrimoine.</p>
           <p>Nous ne nous contentons pas de donner des conseils ; nous vous accompagnons dans la mise en œuvre de solutions concrètes qui génèrent des résultats mesurables et une stabilité à long terme.</p>
         </div>
         <div className="about-img">
@@ -338,7 +346,7 @@ const ServiceDetail = () => {
           <FontAwesomeIcon icon={service.icon} className="service-icon" style={{ fontSize: '4rem' }} />
           <h1>{service.title}</h1>
           <p className="service-description-large">{service.description}</p>
-          <p>Nos experts Mybudget vous accompagnent pas à pas pour mettre en œuvre cette solution et garantir votre succès financier. Chaque plan est personnalisé selon vos revenus et vos objectifs de vie.</p>
+          <p>Nos experts MyBudget vous accompagnent pas à pas pour mettre en œuvre cette solution et garantir votre succès financier. Chaque plan est personnalisé selon vos revenus et vos objectifs de vie.</p>
           <Link to="/contact" className="btn-primary" style={{ display: 'inline-block', marginTop: '20px', textDecoration: 'none' }}>Discuter avec un conseiller</Link>
         </div>
         <div className="about-img">
@@ -419,63 +427,115 @@ const ContactForm = () => {
 };
 
 // Composant de la page Tableau de Bord (Dashboard)
-const Dashboard = () => {
-  const savedData = JSON.parse(localStorage.getItem('budgetData')) || { revenus: 0, depenses: 0, objectifs: 0 };
-  const rev = parseFloat(savedData.revenus) || 0;
-  const dep = parseFloat(savedData.depenses) || 0;
-  const epargne = rev - dep;
+const Dashboard = ({ formatPrice }) => {
+  // Récupération des listes réelles depuis localStorage
+  const savedIncomes = JSON.parse(localStorage.getItem('incomes')) || [];
+  const savedExpenses = JSON.parse(localStorage.getItem('expenses')) || [];
+  const budgetData = JSON.parse(localStorage.getItem('budgetData')) || { objectifs: 0 }; // Pour les objectifs
+
+  // Calcul des totaux en convertissant tout en USD (base de référence)
+  const totalIncomeUSD = savedIncomes.reduce((acc, curr) => acc + (curr.currency === 'CDF' ? curr.amount / 2800 : curr.amount), 0);
+  const totalExpensesUSD = savedExpenses.reduce((acc, curr) => acc + (curr.currency === 'CDF' ? curr.amount / 2800 : curr.amount), 0);
   
-  // Calcul du graphique (Donut)
-  const total = rev > 0 ? rev : 1;
-  const depPercentage = Math.min((dep / total) * 100, 100);
-  const strokeDash = (depPercentage * 251.2) / 100; // 251.2 est la circonférence pour r=40
+  const balanceUSD = totalIncomeUSD - totalExpensesUSD;
   
+  // Calcul du taux d'épargne
+  const savingsRate = totalIncomeUSD > 0 ? (balanceUSD / totalIncomeUSD) * 100 : 0;
+
+  // Placeholder pour la plus grosse dépense (peut être rendu dynamique plus tard)
+  const largestExpense = savedExpenses.length > 0 
+    ? savedExpenses.reduce((prev, current) => (prev.amount > current.amount ? prev : current)).title 
+    : "N/A";
+
+  // Données mockées pour le graphique (peut être rendu dynamique plus tard)
+  const mockChartBars = [60, 80, 45, 90, 70, 85]; 
+
   return (
-    <div className="dashboard-page page-padding">
-      <motion.h1 initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>Votre Santé Financière</motion.h1>
-      <p>Bienvenue sur votre espace personnel. Voici vos résultats réels basés sur votre dernier bilan.</p>
-      <div className="dashboard-widgets">
-        <div className="widget glass">
-          <h3>Résumé Budgétaire Réel</h3>
-          <div className="chart-flex">
-            <div className="chart-container">
-              <svg width="120" height="120" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="40" stroke="#334d57" strokeWidth="10" fill="transparent" />
-                <motion.circle 
-                  cx="50" cy="50" r="40" stroke="var(--primary-color)" strokeWidth="10" fill="transparent"
-                  strokeDasharray="251.32"
-                  initial={{ strokeDashoffset: 251.2 }}
-                  animate={{ strokeDashoffset: 251.32 - strokeDash }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  strokeLinecap="round"
-                  transform="rotate(-90 50 50)"
-                />
-                <text x="50" y="55" textAnchor="middle" fill="white" fontSize="12" fontWeight="bold">{Math.round(depPercentage)}%</text>
-              </svg>
-              <p className="chart-label">Dépenses / Revenus</p>
-            </div>
-            <div className="stats">
-              <p>Revenus: <span>${rev}</span></p>
-              <p>Dépenses: <span>${dep}</span></p>
-              <p>Épargne actuelle: <span style={{ color: epargne >= 0 ? 'var(--primary-color)' : '#e74c3c' }}>${epargne}</span></p>
-            </div>
+    <div className="dashboard-container page-padding">
+      <motion.div 
+        initial={{ opacity: 0, y: -20 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="dashboard-header"
+      >
+        <h1>Tableau de bord financier</h1>
+        <p>Résumé en temps réel de votre situation actuelle.</p>
+      </motion.div>
+
+      {/* Cards principales : Totaux */}
+      <div className="dashboard-summary-grid">
+        <div className="summary-card income">
+          <div className="icon"><FontAwesomeIcon icon={['fas', 'arrow-trend-up']} /></div>
+          <div className="info">
+            <span>Total Revenus</span>
+            <h3>{formatPrice(totalIncomeUSD)}</h3>
           </div>
         </div>
-        <div className="widget glass">
-          <h3>Objectifs d'Épargne</h3>
-          <p>Cible mensuelle: <span>${savedData.objectifs || 0}</span></p>
-          <p>Statut: <span>{epargne >= (savedData.objectifs || 0) ? 'Objectif atteint !' : 'En progression...'}</span></p>
-          <div className="progress-bar-bg">
-            <motion.div 
-              className="progress-bar-fill"
-              initial={{ width: 0 }}
-              animate={{ width: `${Math.min((epargne / (parseFloat(savedData.objectifs) || 1)) * 100, 100)}%` }}
-            ></motion.div>
+        <div className="summary-card expenses">
+          <div className="icon"><FontAwesomeIcon icon={['fas', 'arrow-trend-down']} /></div>
+          <div className="info">
+            <span>Total Dépenses</span>
+            <h3>{formatPrice(totalExpensesUSD)}</h3>
           </div>
         </div>
-        <div className="widget glass">
-          <h3>Conseils Personnalisés</h3>
-          <p>{epargne < 0 ? "Attention, vos dépenses dépassent vos revenus. Un audit de trésorerie est recommandé." : "Bonne gestion ! Vous pourriez investir votre excédent de $" + epargne + " pour faire croître votre capital."}</p>
+        <div className="summary-card balance">
+          <div className="icon"><FontAwesomeIcon icon={['fas', 'wallet']} /></div>
+          <div className="info">
+            <span>Solde Restant</span>
+            <h3>{formatPrice(balanceUSD)}</h3>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards Statistiques */}
+      <div className="stats-detailed-grid">
+        <motion.div whileHover={{ y: -5 }} className="stat-card glass">
+          <h4>Taux d'épargne</h4>
+          <div className="stat-value text-primary">{savingsRate.toFixed(1)}%</div>
+          <p>De vos revenus sont mis de côté mensuellement.</p>
+        </motion.div>
+        <motion.div whileHover={{ y: -5 }} className="stat-card glass">
+          <h4>Plus grosse dépense</h4>
+          <div className="stat-value text-error">{largestExpense}</div>
+          <p>Représente X% de votre budget total.</p> {/* Ce pourcentage doit être calculé dynamiquement */}
+        </motion.div>
+        <motion.div whileHover={{ y: -5 }} className="stat-card glass">
+          <h4>Objectif d'épargne</h4>
+          <div className="stat-value text-primary">{formatPrice(parseFloat(budgetData.objectifs) || 0)}</div>
+          <p>Cible mensuelle.</p>
+        </motion.div>
+      </div>
+
+      {/* Section Graphique (Placeholder) */}
+      <div className="chart-section glass">
+        <div className="chart-header">
+          <h3>Évolution des flux financiers</h3>
+          <div className="chart-legend">
+            <span><i className="dot income"></i> Revenus</span>
+            <span><i className="dot expenses"></i> Dépenses</span>
+          </div>
+        </div>
+        <div className="chart-placeholder">
+          <div className="bar-container">
+            {mockChartBars.map((h, i) => (
+              <div key={i} className="bar-pair">
+                <motion.div 
+                  initial={{ height: 0 }} 
+                  animate={{ height: `${h}%` }} 
+                  className="bar income"
+                  transition={{ duration: 1, delay: i * 0.1 }}
+                ></motion.div>
+                <motion.div 
+                  initial={{ height: 0 }} 
+                  animate={{ height: `${h * 0.6}%` }} 
+                  className="bar expenses"
+                  transition={{ duration: 1, delay: i * 0.1 + 0.2 }}
+                ></motion.div>
+              </div>
+            ))}
+          </div>
+          <div className="chart-days">
+            {['Oct', 'Nov', 'Déc', 'Jan', 'Fév', 'Mar'].map(d => <span key={d}>{d}</span>)}
+          </div>
         </div>
       </div>
     </div>
@@ -483,14 +543,14 @@ const Dashboard = () => {
 };
 
 // Nouveau composant Page Historique
-const HistoryPage = () => {
+const HistoryPage = ({ formatPrice }) => {
   const history = JSON.parse(localStorage.getItem('budgetHistory')) || [];
 
   return (
     <div className="history-page page-padding">
       <div className="page-header-simple">
         <motion.h1 initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>Historique d'Évolution</motion.h1>
-        <p>Retrouvez vos anciens bilans Mybudget pour mesurer vos progrès.</p>
+        <p>Retrouvez vos anciens bilans MyBudget pour mesurer vos progrès.</p>
       </div>
       
       <div className="history-list">
@@ -507,9 +567,9 @@ const HistoryPage = () => {
                 <FontAwesomeIcon icon={['fas', 'calendar-alt']} /> {item.date}
               </div>
               <div className="history-stats">
-                <span>Revenus: <strong className="text-success">${item.revenus}</strong></span>
-                <span>Dépenses: <strong className="text-error">${item.depenses}</strong></span>
-                <span className="history-epargne">Épargne: <strong className="text-primary">${(parseFloat(item.revenus) - parseFloat(item.depenses)).toFixed(2)}</strong></span>
+                <span>Revenus: <strong className="text-success">{formatPrice(parseFloat(item.revenus))}</strong></span>
+                <span>Dépenses: <strong className="text-error">{formatPrice(parseFloat(item.depenses))}</strong></span>
+                <span className="history-epargne">Épargne: <strong className="text-primary">{formatPrice(parseFloat(item.revenus) - parseFloat(item.depenses))}</strong></span>
               </div>
             </motion.div>
           ))
@@ -522,7 +582,7 @@ const HistoryPage = () => {
 };
 
 // Composant Modal pour le Bilan Budgétaire
-const BudgetModal = ({ onClose }) => {
+const BudgetModal = ({ onClose, currency }) => {
   const [step, setStep] = useState(1);
   const [budgetData, setBudgetData] = useState(() => {
     const savedData = localStorage.getItem('budgetData');
@@ -554,7 +614,7 @@ const BudgetModal = ({ onClose }) => {
           <div>
             <h3>Étape 1: Vos Revenus</h3>
             <div className="form-group">
-              <label htmlFor="revenus">Revenus Mensuels (Net en $) :</label>
+              <label htmlFor="revenus">Revenus Mensuels (Net en {currency}) :</label>
               <input type="number" id="revenus" name="revenus" value={budgetData.revenus} onChange={handleChange} placeholder="Ex: 2500" />
             </div>
             <button className="btn-primary" onClick={() => setStep(2)}>Suivant</button>
@@ -564,7 +624,7 @@ const BudgetModal = ({ onClose }) => {
           <div>
             <h3>Étape 2: Vos Dépenses</h3>
             <div className="form-group">
-              <label htmlFor="depenses">Dépenses Fixes Mensuelles ($) :</label>
+              <label htmlFor="depenses">Dépenses Fixes Mensuelles ({currency}) :</label>
               <input type="number" id="depenses" name="depenses" value={budgetData.depenses} onChange={handleChange} placeholder="Ex: 1500" />
             </div>
             <button className="btn-secondary" onClick={() => setStep(1)}>Précédent</button>
@@ -575,7 +635,7 @@ const BudgetModal = ({ onClose }) => {
           <div>
             <h3>Étape 3: Vos Objectifs</h3>
             <div className="form-group">
-              <label htmlFor="objectifs">Objectifs d'Épargne ($ / mois) :</label>
+              <label htmlFor="objectifs">Objectifs d'Épargne ({currency} / mois) :</label>
               <input type="number" id="objectifs" name="objectifs" value={budgetData.objectifs} onChange={handleChange} placeholder="Ex: 300" />
             </div>
             <button className="btn-secondary" onClick={() => setStep(2)}>Précédent</button>
@@ -592,7 +652,7 @@ const VideoModal = ({ onClose }) => (
   <div className="modal-overlay">
     <div className="modal-content video-modal-content">
       <button className="modal-close" onClick={onClose}>&times;</button>
-      <h2>Tutoriel d'Orientation Mybudget</h2>
+      <h2>Tutoriel d'Orientation MyBudget</h2>
       <div className="video-container">
         <iframe
           width="560"
@@ -610,7 +670,7 @@ const VideoModal = ({ onClose }) => (
 );
 
 // Composant Modal pour le Devis
-const QuoteModal = ({ onClose }) => {
+const QuoteModal = ({ onClose, currency }) => {
   const [quoteData, setQuoteData] = useState({
     service: '',
     budget: '',
@@ -647,9 +707,9 @@ const QuoteModal = ({ onClose }) => {
 
     setQuoteResult({
       service: serviceDescription,
-      budgetIndicatif: quoteData.budget ? `$${quoteData.budget}` : 'Non spécifié',
+      budgetIndicatif: quoteData.budget ? `${quoteData.budget} ${currency}` : 'Non spécifié',
       detailsDemande: quoteData.details || 'Aucun',
-      coutEstime: `$${estimatedCost}`,
+      coutEstime: `${estimatedCost} ${currency}`,
       delaiEstime: '5-7 jours ouvrés',
     });
   };
@@ -674,7 +734,7 @@ const QuoteModal = ({ onClose }) => {
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="budget">Budget indicatif (mensuel en $) :</label>
+              <label htmlFor="budget">Budget indicatif (mensuel en {currency}) :</label>
               <input type="number" id="budget" name="budget" value={quoteData.budget} onChange={handleChange} placeholder="Ex: 1000" />
             </div>
             <div className="form-group">
@@ -710,43 +770,148 @@ const QuoteModal = ({ onClose }) => {
   );
 };
 
+// Composant Page de Connexion (Bloque l'accès à l'application)
+const LoginPage = ({ onLoginSuccess }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const login = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsLoading(true);
+      try {
+        const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: {
+            Authorization: `Bearer ${tokenResponse.access_token}`,
+          },
+        });
+        const info = await res.json();
+        const userData = {
+          id: info.sub, // L'identifiant unique Google de l'utilisateur
+          name: info.name,
+          email: info.email,
+          picture: info.picture
+        };
+        localStorage.setItem('user', JSON.stringify(userData));
+        onLoginSuccess(userData);
+      } catch (err) {
+        console.error("Erreur lors de la récupération des infos utilisateur:", err);
+        alert("Échec de la récupération des données utilisateur.");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    onError: (error) => {
+      console.log('Login Failed:', error);
+      setIsLoading(false);
+    },
+    prompt: 'select_account', // Force Google à afficher le pop-up de sélection de compte
+  });
+
+  return (
+    <div className="login-overlay">
+      <motion.div 
+        className="login-box glass"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+      >
+        <div className="logo" style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>MyBudget</div>
+        <h2>Bienvenue sur MyBudget</h2>
+        <p>Connectez-vous avec votre compte Google pour faire la gestion de votre budget.</p>
+        <div className="google-btn-container" style={{ display: 'flex', justifyContent: 'center', marginTop: '2rem' }}>
+          <button 
+            className="btn-primary-glow" 
+            onClick={() => login()} 
+            disabled={isLoading}
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', opacity: isLoading ? 0.7 : 1 }}
+          >
+            <FontAwesomeIcon icon={isLoading ? ['fas', 'circle-notch'] : ['fab', 'google']} spin={isLoading} />
+            {isLoading ? 'Connexion en cours...' : 'Se connecter avec Google'}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showBudgetModal, setShowBudgetModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [showQuoteModal, setShowQuoteModal] = useState(false);
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('user')));
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const [currency, setCurrency] = useState(() => localStorage.getItem('currency') || 'USD');
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  }
+
+  const toggleTheme = () => {
+    setIsDarkMode(!isDarkMode);
   };
 
+  const toggleCurrency = () => {
+    const newCurrency = currency === 'USD' ? 'CDF' : 'USD';
+    setCurrency(newCurrency);
+    localStorage.setItem('currency', newCurrency);
+  };
+
+  const formatPrice = (amount) => {
+    if (currency === 'USD') return `$${amount.toLocaleString()}`;
+    return `${(amount * 2800).toLocaleString()} FC`; // Taux indicatif 1$ = 2800 FC
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUser(null);
+    setShowUserMenu(false);
+  };
+
+  if (!user) {
+    return <LoginPage onLoginSuccess={setUser} />;
+  }
+
   return (
-    <div className="app-container">
+    <div className={`app-container ${isDarkMode ? 'dark-mode' : 'light-mode'}`}>
+      <Sidebar />
+      <div className="main-layout-content">
       <header className="navbar">
-        <div className="logo">Mybudget</div>
-        <nav className="nav-links">
-          <Link to="/">Accueil</Link>
-          <Link to="/about">À Propos</Link>
-          <Link to="/services">Services</Link>
-          <Link to="/dashboard">Tableau de Bord</Link> {/* Nouveau lien */}
-          <Link to="/history">Historique</Link>
-          <Link to="/contact">Contact</Link>
-        </nav>
+        <div className="logo" style={{ display: 'none' }}>MyBudget</div>
+        <nav className="nav-links"></nav> {/* Garder la balise nav vide si elle est stylisée */}
         <div className="navbar-actions">
-          <div className="search-bar-container">
-            <input 
-              type="text" 
-              placeholder="Rechercher un service..." 
-              value={searchTerm} 
-              onChange={handleSearchChange} 
-              className="search-input" 
-            />
-            <FontAwesomeIcon icon={['fas', 'search']} className="search-icon" />
+          <div className="nav-user-controls">
+            <Link to="/notifications" className="nav-notification-btn" title="Notifications">
+              <FontAwesomeIcon icon={['fas', 'bell']} />
+            </Link>
+            <button className="theme-toggle" onClick={toggleTheme} title={isDarkMode ? "Passer en mode clair" : "Passer en mode sombre"}>
+              <FontAwesomeIcon icon={isDarkMode ? ['fas', 'sun'] : ['fas', 'moon']} />
+            </button>
+            <div className="user-menu-wrapper" style={{ position: 'relative' }}>
+              <div 
+                className="user-nav-profile" 
+                onClick={() => setShowUserMenu(!showUserMenu)} 
+                style={{ cursor: 'pointer' }}
+              >
+                <img 
+                  src={user.picture} 
+                  alt="Profile" 
+                  className="nav-avatar" 
+                  referrerPolicy="no-referrer" 
+                />
+              </div>
+              
+              {showUserMenu && (
+                <motion.div 
+                  className="user-dropdown glass"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                >
+                  <span className="dropdown-user-name">{user.name}</span>
+                  <button className="btn-logout" onClick={handleLogout}>Se déconnecter</button>
+                </motion.div>
+              )}
+            </div>
           </div>
-        <button className="btn-gmail-nav">
-          <FontAwesomeIcon icon={['fab', 'google']} />
-        </button>
-          <button className="btn-primary" onClick={() => setShowQuoteModal(true)}>Obtenir un devis</button>
         </div>
       </header>
 
@@ -756,39 +921,22 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/services" element={<Services searchTerm={searchTerm} />} />
           <Route path="/services/:id" element={<ServiceDetail />} />
-          <Route path="/dashboard" element={<Dashboard />} /> {/* Nouvelle route */}
+          <Route path="/dashboard" element={<Dashboard currency={currency} formatPrice={formatPrice} />} />
+          <Route path="/revenus" element={<Income currency={currency} formatPrice={formatPrice} toggleCurrency={toggleCurrency} />} />
+          <Route path="/depenses" element={<Expense currency={currency} formatPrice={formatPrice} toggleCurrency={toggleCurrency} />} />
+          <Route path="/statistiques" element={<Statistics currency={currency} formatPrice={formatPrice} toggleCurrency={toggleCurrency} />} />
+          <Route path="/objectifs" element={<SavingsGoals currency={currency} formatPrice={formatPrice} toggleCurrency={toggleCurrency} />} />
+          <Route path="/rapports" element={<Reports currency={currency} formatPrice={formatPrice} />} />
+          <Route path="/notifications" element={<Notifications />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/contact" element={<ContactForm />} />
         </Routes>
       </main>
 
-      <footer className="main-footer">
-        <div className="footer-grid">
-          <div className="footer-col">
-            <h3>Mybudget</h3>
-            <p>Votre partenaire de confiance pour la liberté financière et la gestion saine de votre patrimoine.</p>
-          </div>
-          <div className="footer-col">
-            <h4>Liens Rapides</h4>
-            <Link to="/about">À Propos</Link>
-            <Link to="/services">Services</Link>
-            <Link to="/dashboard">Tableau de Bord</Link>
-            <Link to="/history">Historique</Link>
-          </div>
-          <div className="footer-col">
-            <h4>Contact</h4>
-            <p>Email : benbarakashamba@gmail.com</p>
-            <p>Téléphone : +243 986760178</p>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>&copy; 2026 Mybudget. Tous droits réservés.</p>
-        </div>
-      </footer>
-
-      {showBudgetModal && <BudgetModal onClose={() => setShowBudgetModal(false)} />}
+      {showBudgetModal && <BudgetModal onClose={() => setShowBudgetModal(false)} currency={currency} />}
       {showVideoModal && <VideoModal onClose={() => setShowVideoModal(false)} />}
-      {showQuoteModal && <QuoteModal onClose={() => setShowQuoteModal(false)} />}
+      {showQuoteModal && <QuoteModal onClose={() => setShowQuoteModal(false)} currency={currency} />}
+      </div>
     </div>
   );
 }

@@ -1,0 +1,121 @@
+.sidebar-container {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 220px;
+  background-color: var(--bg-dark);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  transition: transform 0.3s ease;
+  z-index: 1050;
+}
+
+.light-mode .sidebar-container {
+  background-color: #ffffff;
+  border-right: 1px solid var(--glass-border);
+  box-shadow: none;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 10px 30px;
+}
+
+.logo-icon {
+  background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+  color: white;
+  font-weight: 800;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.logo-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--text-light);
+  letter-spacing: 1px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: #aab;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+  background: rgba(0, 210, 255, 0.05);
+  color: var(--primary-color);
+}
+
+.sidebar-link.active {
+  background: linear-gradient(90deg, rgba(0, 210, 255, 0.1), rgba(58, 123, 213, 0.1));
+  color: #00d2ff;
+  border-right: 3px solid #00d2ff; /* Optionnel: changer le côté de la bordure */
+  border-radius: 4px 10px 10px 4px;
+}
+
+.light-mode .sidebar-link.active {
+  background: #ffffff;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  border-right: 4px solid var(--primary-color);
+}
+
+.user-status {
+  font-size: 0.75rem;
+  color: #00d2ff;
+  margin: 0;
+}
+
+/* Mobile Styles */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1100;
+  background: #00d2ff;
+  color: #0f1d24;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 992px) {
+  .sidebar-toggle { display: block; }
+  .sidebar-container {
+    transform: translateX(-100%);
+  }
+  .sidebar-container.open {
+    transform: translateX(0);
+  }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1040;
+  }
+}
